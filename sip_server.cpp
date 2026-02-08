@@ -148,6 +148,14 @@ namespace gbsip_server
 			sip_server_info_.port
 		);
 		
+		// 初始化RecordHandler
+		record_handler_ = std::make_shared<gbsip_server::RecordHandler>(
+			sip_context_,
+			sip_server_info_.sipServerId,
+			sip_server_info_.ip,
+			sip_server_info_.port
+		);
+		
 		stoped_ = false;
 		return true;
 		//return false;
@@ -339,6 +347,10 @@ namespace gbsip_server
 		} else if (cmdType == "DeviceStatus") {
 			if (device_info_handler_) {
 				device_info_handler_->handleMessageResponse(sip_event);
+			}
+		} else if (cmdType == "RecordInfo") {
+			if (record_handler_) {
+				record_handler_->handleMessageResponse(sip_event);
 			}
 		}
 		// 其他CmdType（如Catalog）可以在这里添加

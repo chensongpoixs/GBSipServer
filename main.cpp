@@ -33,6 +33,7 @@
 #include "controller/StaticController.hpp"
 #include "controller/DeviceInfoController.hpp"
 #include "controller/PTZController.hpp"
+#include "controller/RecordController.hpp"
 #include "oatpp/web/server/interceptor/AllowCorsGlobal.hpp"
 #include"controller/StreamController.hpp"
 #include "oatpp-swagger/Controller.hpp"
@@ -68,6 +69,14 @@ void run() {
 	auto ptzController = PTZController::createShared();
 	ptzController->setPTZHandler(gbsip_server::SipServer::GetInstance().getPTZHandler());
 	docEndpoints.append(router->addController(ptzController)->getEndpoints());
+	
+	// 注册RecordController并设置RecordService
+	auto recordController = RecordController::createShared();
+	auto recordService = std::make_shared<gbsip_server::RecordService>(
+		gbsip_server::SipServer::GetInstance().getRecordHandler()
+	);
+	recordController->setRecordService(recordService);
+	docEndpoints.append(router->addController(recordController)->getEndpoints());
 	
 	router->addController(oatpp::swagger::Controller::createShared(docEndpoints));
 	//router->addController(oatpp::swagger::Controller::createShared(docEndpoints));
