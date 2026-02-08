@@ -113,6 +113,9 @@ FILE(GLOB  swagger_source
 		service/*.h
         service/*.cpp
         service/*.hpp
+		sip/*.h
+		sip/*.hpp
+		sip/*.cpp
 		
 )
  

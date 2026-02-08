@@ -48,6 +48,8 @@ extern "C" {
 #include "AppComponent.hpp"
 #include "libp2p_peerconnection/connection_context.h"
 #include "utils/yaml_config.h"
+#include "sip/DeviceInfoHandler.hpp"
+#include "sip/PTZHandler.hpp"
 namespace gbsip_server
 {
 	/**
@@ -275,6 +277,18 @@ namespace gbsip_server
 		std::unordered_map<std::string, std::shared_ptr<SipClient>>        client_map_;
 		bool request_invite_ = false;
 		int32_t  delay_ = 10;
+		
+		// Handler成员
+		std::shared_ptr<gbsip_server::DeviceInfoHandler> device_info_handler_;
+		std::shared_ptr<gbsip_server::PTZHandler> ptz_handler_;
+	public:
+		// 获取Handler的方法
+		std::shared_ptr<gbsip_server::DeviceInfoHandler> getDeviceInfoHandler() {
+			return device_info_handler_;
+		}
+		std::shared_ptr<gbsip_server::PTZHandler> getPTZHandler() {
+			return ptz_handler_;
+		}
 	};
 }
 

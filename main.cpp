@@ -31,6 +31,8 @@
 #include "controller/UserController.hpp"
 #include "controller/DeviceController.hpp"
 #include "controller/StaticController.hpp"
+#include "controller/DeviceInfoController.hpp"
+#include "controller/PTZController.hpp"
 #include "oatpp/web/server/interceptor/AllowCorsGlobal.hpp"
 #include"controller/StreamController.hpp"
 #include "oatpp-swagger/Controller.hpp"
@@ -60,6 +62,13 @@ void run() {
 //	oatpp::web::server::api::Endpoints DevicedocEndpoints;
 	docEndpoints.append(router->addController(DeviceController::createShared())->getEndpoints());
 	docEndpoints.append(router->addController(StreamController::createShared())->getEndpoints());
+	docEndpoints.append(router->addController(DeviceInfoController::createShared())->getEndpoints());
+	
+	// 注册PTZController并设置Handler
+	auto ptzController = PTZController::createShared();
+	ptzController->setPTZHandler(gbsip_server::SipServer::GetInstance().getPTZHandler());
+	docEndpoints.append(router->addController(ptzController)->getEndpoints());
+	
 	router->addController(oatpp::swagger::Controller::createShared(docEndpoints));
 	//router->addController(oatpp::swagger::Controller::createShared(docEndpoints));
 	router->addController(StaticController::createShared());

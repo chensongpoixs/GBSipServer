@@ -1,0 +1,163 @@
+# CMakeLists.txt 更新说明
+
+## 需要添加的新文件
+
+在 GBServer/GbSipServer/CMakeLists.txt 中添加以下源文件：
+
+### 1. 工具类源文件
+```cmake
+# XML工具类
+utils/XmlHelper.cpp
+```
+
+### 2. Service层源文件
+```cmake
+# 目录服务
+service/CatalogService.cpp
+```
+
+### 3. 完整的源文件列表示例
+
+```cmake
+set(GBSIPSERVER_SOURCES
+    # 主程序
+    main.cpp
+    sip_server.cpp
+    ErrorHandler.cpp
+    
+    # Service层
+    service/UserService.cpp
+    service/DeviceService.cpp
+    service/StreamService.cpp
+    service/CatalogService.cpp          # 新增
+    
+    # 工具类
+    utils/yaml_config.cpp
+    utils/XmlHelper.cpp                 # 新增
+)
+
+set(GBSIPSERVER_HEADERS
+    # 头文件
+    sip_server.h
+    AppComponent.hpp
+    DatabaseComponent.hpp
+    SwaggerComponent.hpp
+    ErrorHandler.hpp
+    gbsip_server_log.h
+    
+    # Controller
+    controller/UserController.hpp
+    controller/DeviceController.hpp
+    controller/StreamController.hpp
+    controller/StaticController.hpp
+    controller/CatalogController.hpp    # 新增
+    
+    # Service
+    service/UserService.hpp
+    service/DeviceService.hpp
+    service/StreamService.hpp
+    service/CatalogService.hpp          # 新增
+    
+    # DTO
+    dto/UserDto.hpp
+    dto/DeviceDto.hpp
+    dto/StreamDto.hpp
+    dto/StatusDto.hpp
+    dto/PageDto.hpp
+    dto/ChannelDto.hpp                  # 新增
+    dto/CatalogDto.hpp                  # 新增
+    
+    # DB
+    db/UserDb.hpp
+    db/DeviceDb.hpp
+    db/ChannelDb.hpp                    # 新增
+    
+    # Utils
+    utils/yaml_config.h
+    utils/XmlHelper.hpp                 # 新增
+)
+```
+
+### 4. 包含目录
+确保包含了正确的目录：
+
+```cmake
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/controller
+    ${CMAKE_CURRENT_SOURCE_DIR}/service
+    ${CMAKE_CURRENT_SOURCE_DIR}/dto
+    ${CMAKE_CURRENT_SOURCE_DIR}/db
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils
+    ${CMAKE_CURRENT_SOURCE_DIR}/sip      # 新增（待实现SIP处理层时）
+)
+```
+
+### 5. 依赖库
+确保链接了必要的库：
+
+```cmake
+target_link_libraries(GbSipServer
+    # oatpp相关
+    oatpp::oatpp
+    oatpp::oatpp-sqlite
+    oatpp::oatpp-swagger
+    
+    # SIP相关
+    eXosip2
+    osip2
+    osipparser2
+    
+    # 其他依赖
+    yaml-cpp
+    pthread
+)
+```
+
+## 注意事项
+
+1. **头文件依赖**
+   - ChannelDto.hpp 被 CatalogDto.hpp 引用
+   - CatalogDto.hpp 被 CatalogService.hpp 引用
+   - 确保编译顺序正确
+
+2. **数据库组件注册**
+   需要在 DatabaseComponent.hpp 中添加 ChannelDb 组件：
+   
+   ```cpp
+   OATPP_CREATE_COMPONENT(std::shared_ptr<ChannelDb>, channelDb)([] {
+       OATPP_COMPONENT(std::shared_ptr<oatpp::orm::Executor>, executor);
+       return std::make_shared<ChannelDb>(executor);
+   }());
+   ```
+
+3. **Controller注册**
+   需要在 main.cpp 中注册 CatalogController：
+   
+   ```cpp
+   // 在 main() 函数中添加
+   router->addController(CatalogController::createShared());
+   ```
+
+4. **编译测试**
+   ```bash
+   cd build
+   cmake ..
+   cmake --build . --config Release
+   ```
+
+5. **可能的编译错误**
+   - 如果出现 oatpp 相关错误，检查 oatpp 版本
+   - 如果出现链接错误，检查库路径
+   - 如果出现编码错误，确保源文件使用UTF-8编码
+
+## 完整的CMakeLists.txt参考
+
+参考现有的 GBServer/GbSipServer/CMakeLists.txt 文件，
+按照上述说明添加新文件即可。
+
+主要修改点：
+1. 在 SOURCES 列表中添加 .cpp 文件
+2. 在 HEADERS 列表中添加 .hpp 文件
+3. 确保包含目录正确
+4. 确保链接库完整
