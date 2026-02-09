@@ -34,6 +34,9 @@
 #include "controller/DeviceInfoController.hpp"
 #include "controller/PTZController.hpp"
 #include "controller/RecordController.hpp"
+#include "controller/AlarmController.hpp"
+#include "service/RecordService.hpp"
+#include "service/AlarmService.hpp"
 #include "oatpp/web/server/interceptor/AllowCorsGlobal.hpp"
 #include"controller/StreamController.hpp"
 #include "oatpp-swagger/Controller.hpp"
@@ -77,6 +80,14 @@ void run() {
 	);
 	recordController->setRecordService(recordService);
 	docEndpoints.append(router->addController(recordController)->getEndpoints());
+	
+	// 注册AlarmController并设置AlarmService
+	auto alarmController = AlarmController::createShared();
+	auto alarmService = std::make_shared<gbsip_server::AlarmService>(
+		gbsip_server::SipServer::GetInstance().getAlarmHandler()
+	);
+	alarmController->setAlarmService(alarmService);
+	docEndpoints.append(router->addController(alarmController)->getEndpoints());
 	
 	router->addController(oatpp::swagger::Controller::createShared(docEndpoints));
 	//router->addController(oatpp::swagger::Controller::createShared(docEndpoints));

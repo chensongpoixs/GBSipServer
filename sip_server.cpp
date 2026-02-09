@@ -156,6 +156,14 @@ namespace gbsip_server
 			sip_server_info_.port
 		);
 		
+		// 初始化AlarmHandler
+		alarm_handler_ = std::make_shared<gbsip_server::AlarmHandler>(
+			sip_context_,
+			sip_server_info_.sipServerId,
+			sip_server_info_.ip,
+			sip_server_info_.port
+		);
+		
 		stoped_ = false;
 		return true;
 		//return false;
@@ -352,6 +360,10 @@ namespace gbsip_server
 			if (record_handler_) {
 				record_handler_->handleMessageResponse(sip_event);
 			}
+		} else if (cmdType == "Alarm") {
+			if (alarm_handler_) {
+				alarm_handler_->handleMessageResponse(sip_event);
+			}
 		}
 		// 其他CmdType（如Catalog）可以在这里添加
 	}
@@ -364,6 +376,29 @@ namespace gbsip_server
 	void SipServer::HandlerSipInSubscriptionNew(eXosip_event_t * sip_event)
 	{
 		SIPSERVER_LOG(LS_INFO) << "EXOSIP_IN_SUBSCRIPTION_NEW type=" << sip_event->type;
+		
+		// 检查是否是NOTIFY消息
+		if (!sip_event || !sip_event->request) {
+			return;
+		}
+		
+		// 获取Event头
+		osip_header_t* event_header = nullptr;
+		osip_message_header_get_byname(sip_event->request, "Event", 0, &event_header);
+		if (!event_header || !event_header->hvalue) {
+			return;
+		}
+		
+		std::string eventType(event_header->hvalue);
+		SIPSERVER_LOG(LS_INFO) << "Received NOTIFY event type: " << eventType;
+		
+		// 根据Event类型分发到对应的Handler
+		if (eventType == "Alarm") {
+			if (alarm_handler_) {
+				alarm_handler_->handleAlarmNotify(sip_event);
+			}
+		}
+		// 其他Event类型可以在这里添加
 	}
 	void SipServer::request_info(eXosip_event_t * sip_event)
 	{

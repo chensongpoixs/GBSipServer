@@ -4,8 +4,8 @@
 
 基于GB/T 28181-2016标准的视频监控联网系统SIP服务器，使用C++实现，支持设备注册、目录管理、云台控制、录像管理等完整功能。
 
-**当前版本**: v0.35  
-**完成度**: 35.4% (34/96功能)  
+**当前版本**: v0.50  
+**完成度**: 50.0% (48/96功能)  
 **开发状态**: 🟢 活跃开发中  
 
 ---
@@ -42,7 +42,18 @@
 - ✅ 巡航控制（启动/停止）
 - ✅ 看守位设置
 
-#### 5. 设备管理（100%）
+#### 5. 录像管理（100%）
+- ✅ 录像文件查询
+- ✅ 回放控制（开始/暂停/继续/停止）
+- ✅ 回放进度控制（跳转/速度）
+- ✅ 录像下载
+
+#### 6. 报警管理（60%）
+- ✅ 报警订阅（SUBSCRIBE/NOTIFY）
+- ✅ 报警查询（MESSAGE查询）
+- 🟡 报警确认/复位（进行中）
+
+#### 7. 设备管理（100%）
 - ✅ 设备CRUD操作
 - ✅ 设备分页查询
 - ✅ 设备状态管理
@@ -54,25 +65,31 @@
 
 ### 待实现功能 ⏳
 
-#### 7. 录像管理（0%）
-- ⏳ 录像文件查询
-- ⏳ 录像回放控制
-- ⏳ 录像下载
-- ⏳ 回放速度控制
-
-#### 8. 报警管理（0%）
-- ⏳ 报警订阅
-- ⏳ 报警通知接收
-- ⏳ 报警确认/复位
-
-#### 9. 语音对讲（0%）
+#### 7. 语音对讲（0%）
 - ⏳ 语音广播
 - ⏳ 双向对讲
+- ⏳ 音频编解码
 
-#### 10. 平台级联（0%）
+#### 8. 平台级联（0%）
 - ⏳ 向上级平台注册
 - ⏳ 目录共享
 - ⏳ 级联流转发
+
+#### 9. 移动位置订阅（0%）
+- ⏳ 位置订阅
+- ⏳ 位置通知
+- ⏳ 轨迹记录
+
+#### 10. 设备配置管理（0%）
+- ⏳ 配置查询
+- ⏳ 配置下载
+- ⏳ 配置修改
+
+#### 11. 设备控制（0%）
+- ⏳ 设备重启
+- ⏳ 设备复位
+- ⏳ 远程升级
+- ⏳ 设备校时
 
 ---
 
@@ -242,6 +259,17 @@ database:
 - `POST /api/v1/ptz/cruise/stop` - 停止巡航
 - `POST /api/v1/ptz/guard` - 设置看守位
 
+#### 录像管理
+- `POST /api/v1/record/query` - 查询录像列表
+- `POST /api/v1/record/playback/start` - 开始回放
+- `POST /api/v1/record/playback/pause` - 暂停回放
+- `POST /api/v1/record/playback/resume` - 继续回放
+- `POST /api/v1/record/playback/stop` - 停止回放
+- `POST /api/v1/record/playback/seek` - 跳转播放位置
+- `POST /api/v1/record/playback/speed` - 调整播放速度
+- `POST /api/v1/record/download/start` - 开始下载
+- `POST /api/v1/record/download/stop` - 停止下载
+
 ---
 
 ## 🧪 测试示例
@@ -286,16 +314,20 @@ curl http://localhost:8003/api/v1/device/34020000001320000001/status
 - [Sprint 1: 设备目录管理](实现思路.md)
 - [Sprint 2: 设备信息查询](Sprint2_设备信息查询实现.md)
 - [Sprint 3: 云台控制PTZ](Sprint3_云台控制PTZ实现.md)
+- [Sprint 4: 录像管理](Sprint4_录像管理实现.md)
+- [Sprint 5: 报警管理](Sprint5_报警管理实现.md)
 
 ### 技术文档
 - [SIP处理层实现思路](SIP处理层实现思路.md)
 - [快速开始指南](快速开始指南.md)
 - [实现进度总览](实现进度_总览.md)
+- [项目总体进度](项目总体进度.md)
 
 ### 集成指南
 - [Sprint 1集成指南](集成指南.md)
 - [Sprint 2集成指南](Sprint2_集成指南.md)
 - [Sprint 3集成指南](Sprint3_集成指南.md)
+- [Sprint 4集成指南](Sprint4_集成指南.md)
 
 ---
 
@@ -305,12 +337,12 @@ curl http://localhost:8003/api/v1/device/34020000001320000001/status
 - [x] Sprint 1: 设备目录管理 (2026-02-09)
 - [x] Sprint 2: 设备信息查询 (2026-02-09)
 - [x] Sprint 3: 云台控制PTZ (2026-02-09)
+- [x] Sprint 4: 录像管理 (2026-02-09)
 
 ### 进行中 🟡
-- [ ] Sprint 4: 录像管理 (预计3周)
+- [ ] Sprint 5: 报警管理 (60% - 预计2026-02-23)
 
 ### 计划中 ⏳
-- [ ] Sprint 5: 报警管理 (预计2周)
 - [ ] Sprint 6: 语音对讲 (预计2周)
 - [ ] Sprint 7: 平台级联 (预计2周)
 - [ ] Sprint 8: 移动位置订阅 (预计1周)
@@ -343,23 +375,16 @@ curl http://localhost:8003/api/v1/device/34020000001320000001/status
 
 ---
 
-## 📞 联系方式
+## 📞 项目状态
 
-- **项目主页**: https://chensongpoixs.github.io
-- **问题反馈**: [GitHub Issues](https://github.com/your-repo/issues)
-- **邮箱**: your-email@example.com
-
----
-
-## 🙏 致谢
-
-- [GB/T 28181-2016](http://www.gb688.cn/bzgk/gb/newGbInfo?hcno=469659DC56B9B8187671FF08748CEC89) - 国标协议标准
-- [eXosip2](http://savannah.nongnu.org/projects/exosip) - SIP协议栈
-- [oatpp](https://oatpp.io/) - 现代C++ Web框架
-- [SQLite](https://www.sqlite.org/) - 嵌入式数据库
+- **总体完成度**: 50.0% (48/96功能)
+- **核心功能完成度**: 82.1% (32/39功能)
+- **已完成Sprint**: Sprint 1, 2, 3, 4 (100%)
+- **当前Sprint**: Sprint 5 (60% - 报警管理)
+- **代码统计**: ~7900行代码，87个文件，36个API接口
 
 ---
 
 **最后更新**: 2026-02-09  
-**版本**: v0.35  
+**版本**: v0.50  
 **状态**: 🟢 活跃开发中

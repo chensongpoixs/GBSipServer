@@ -51,6 +51,7 @@ extern "C" {
 #include "sip/DeviceInfoHandler.hpp"
 #include "sip/PTZHandler.hpp"
 #include "sip/RecordHandler.hpp"
+#include "sip/AlarmHandler.hpp"
 namespace gbsip_server
 {
 	/**
@@ -283,6 +284,7 @@ namespace gbsip_server
 		std::shared_ptr<gbsip_server::DeviceInfoHandler> device_info_handler_;
 		std::shared_ptr<gbsip_server::PTZHandler> ptz_handler_;
 	std::shared_ptr<gbsip_server::RecordHandler> record_handler_;
+	std::shared_ptr<gbsip_server::AlarmHandler> alarm_handler_;
 public:
 	// 获取Handler的方法
 	std::shared_ptr<gbsip_server::DeviceInfoHandler> getDeviceInfoHandler() {
@@ -293,6 +295,9 @@ public:
 	}
 	std::shared_ptr<gbsip_server::RecordHandler> getRecordHandler() {
 		return record_handler_;
+	}
+	std::shared_ptr<gbsip_server::AlarmHandler> getAlarmHandler() {
+		return alarm_handler_;
 	}
 };
 }
