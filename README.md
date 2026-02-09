@@ -181,8 +181,8 @@ make -j4
 #### Windows
 ```bash
 # 1. 克隆项目
-git clone <repository-url>
-cd GBServer\GbSipServer
+git clone https://github.com/chensongpoixs/GBSipServer
+cd GbSipServer
 
 # 2. 创建构建目录
 mkdir build
